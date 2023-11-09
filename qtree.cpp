@@ -43,8 +43,11 @@
  * region and do not overlap.
  */
 QTree::QTree(const PNG& imIn) {
-	// ADD YOUR IMPLEMENTATION BELOW
-	
+
+	height = imIn.height();
+	width = imIn.width();
+
+	root = BuildNode(imIn, make_pair(0, 0), make_pair(width - 1, height - 1));
 }
 
 /**
@@ -165,8 +168,26 @@ void QTree::Copy(const QTree& other) {
  * @param lr lower right point of current node's rectangle.
  */
 Node* QTree::BuildNode(const PNG& img, pair<unsigned int, unsigned int> ul, pair<unsigned int, unsigned int> lr) {
-	// Replace the line below with your implementation
-	return nullptr;
+
+	int nodeWidth = ul.first - lr.first;
+	int nodeHeight = ul.second - lr.second;
+
+	
+
+	if (nodeWidth == 0 && nodeHeight == 0){ 
+		return nullptr;
+	}
+
+	int nodeWidthDivided = (nodeWidth / 2) + ((nodeWidth % 2) != 0);
+	int nodeHeightDivided = (nodeHeight / 2) + ((nodeHeight % 2) != 0);
+
+
+	Node root = Node(ul, lr, RGBAPixel());
+
+
+
+
+	return &root;
 }
 
 /*********************************************************/
