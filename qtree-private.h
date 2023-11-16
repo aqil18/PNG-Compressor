@@ -11,4 +11,4 @@
 
 // begin your declarations below
 
-RGBAPixel GetAveragePixel(const PNG& img, int height, int width);
+RGBAPixel GetAveragePixel(Node* NW, Node* NE, Node* SW, Node* SE);
