@@ -172,18 +172,40 @@ Node* QTree::BuildNode(const PNG& img, pair<unsigned int, unsigned int> ul, pair
 	int nodeWidth = ul.first - lr.first;
 	int nodeHeight = ul.second - lr.second;
 
-	
-
 	if (nodeWidth == 0 && nodeHeight == 0){ 
 		return nullptr;
 	}
 
-	int nodeWidthDivided = (nodeWidth / 2) + ((nodeWidth % 2) != 0);
-	int nodeHeightDivided = (nodeHeight / 2) + ((nodeHeight % 2) != 0);
+	int biggerWidth = (nodeWidth / 2) + ((nodeWidth % 2) != 0);
+	int biggerHeight = (nodeHeight / 2) + ((nodeHeight % 2) != 0);
+	int smallerWidth = nodeWidth - biggerWidth;
+	int smallerHeight = nodeHeight - biggerHeight; 
 
+	Node root = Node(ul, lr, GetAveragePixel(img, nodeWidth, nodeHeight));
+	
+	
+	if (nodeHeight == 1 && nodeWidth == 1) {
+		root.NW = BuildNode(img, make_pair(ul.first, ul.second), make_pair(biggerWidth, biggerHeight));
+		root.NE = nullptr;
+		root.SW = nullptr;
+		root.SE = nullptr;
+	} else if (nodeHeight == 1) {
+		root.NW = BuildNode(img, make_pair(ul.first, ul.second), make_pair(biggerWidth, biggerHeight));
+		root.NE = BuildNode(img, make_pair(smallerWidth, ul.second), make_pair(lr.first, biggerHeight));
+		root.SW = nullptr;
+		root.SE = nullptr;
+	} else if (nodeWidth == 1) {
+		root.NW = BuildNode(img, make_pair(ul.first, ul.second), make_pair(biggerWidth, biggerHeight));
+		root.NE = nullptr;
+		root.SW = BuildNode(img, make_pair(ul.first, smallerHeight), make_pair(biggerWidth, lr.second));
+		root.SE = nullptr;
 
-	Node root = Node(ul, lr, RGBAPixel());
-
+	} else {
+		root.NW = BuildNode(img, make_pair(ul.first, ul.second), make_pair(biggerWidth, biggerHeight));
+		root.NE = BuildNode(img, make_pair(smallerWidth, ul.second), make_pair(lr.first, biggerHeight));
+		root.SW = BuildNode(img, make_pair(ul.first, smallerHeight), make_pair(biggerWidth, lr.second));
+		root.SE = BuildNode(img, make_pair(smallerHeight, smallerWidth), make_pair(lr.first, lr.second));
+	}
 
 
 
@@ -194,3 +216,7 @@ Node* QTree::BuildNode(const PNG& img, pair<unsigned int, unsigned int> ul, pair
 /*** IMPLEMENT YOUR OWN PRIVATE MEMBER FUNCTIONS BELOW ***/
 /*********************************************************/
 
+RGBAPixel QTree::GetAveragePixel(const PNG& img, int height, int width){
+
+	return RGBAPixel();
+}

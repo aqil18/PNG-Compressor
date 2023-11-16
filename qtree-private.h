@@ -10,3 +10,5 @@
  */
 
 // begin your declarations below
+
+RGBAPixel GetAveragePixel(const PNG& img, int height, int width);
