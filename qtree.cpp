@@ -178,7 +178,6 @@ Node* QTree::BuildNode(const PNG& img, pair<unsigned int, unsigned int> ul, pair
 	int nodeWidth = lr.first - ul.first;
 	int nodeHeight = lr.second - ul.second;
 
-
 	int splitW = (nodeWidth / 2) + ((nodeWidth % 2) != 0);
 	int splitH = (nodeHeight / 2) + ((nodeHeight % 2) != 0);
 
@@ -192,25 +191,49 @@ Node* QTree::BuildNode(const PNG& img, pair<unsigned int, unsigned int> ul, pair
 		NE = new Node(make_pair(lr.first, ul.second), make_pair(lr.first, ul.second), *img.getPixel(lr.first, ul.second));
 		SW = new Node(make_pair(ul.first, lr.second), make_pair(ul.first, lr.second), *img.getPixel(ul.first, lr.second));
 		SE = new Node(make_pair(lr.first, lr.second), make_pair(lr.first, lr.second), *img.getPixel(lr.first, lr.second));
-	} else if (nodeHeight == 1) {
-		NW = BuildNode(img, make_pair(ul.first, ul.second), make_pair(splitW, lr.second));
-		NE = BuildNode(img, make_pair(splitW, ul.second), make_pair(lr.first, lr.second));
-		SW = nullptr;
-		SE = nullptr;
-	} else if (nodeWidth == 1) {
-		NW = BuildNode(img, make_pair(ul.first, ul.second), make_pair(lr.first, splitH));
-		NE = nullptr;
-		SW = BuildNode(img, make_pair(ul.first, splitH), make_pair(lr.first, lr.second));
-		SE = nullptr;
+ 	} else if (nodeHeight == 1) {
+        NW = BuildNode(img, make_pair(ul.first, ul.second), make_pair(ul.first + splitW, lr.second));
+        NE = BuildNode(img, make_pair(ul.first + splitW, ul.second), make_pair(lr.first, lr.second));
+        SW = nullptr;
+        SE = nullptr;
+    } else if (nodeWidth == 1) {
+        NW = BuildNode(img, make_pair(ul.first, ul.second), make_pair(lr.first, ul.second + splitH));
+        NE = nullptr;
+        SW = BuildNode(img, make_pair(ul.first, ul.second + splitH), make_pair(lr.first, lr.second));
+        SE = nullptr;
+    } else {
+        NW = BuildNode(img, make_pair(ul.first, ul.second), make_pair(ul.first + splitW, ul.second + splitH));
+        NE = BuildNode(img, make_pair(ul.first + splitW, ul.second), make_pair(lr.first, ul.second + splitH));
+        SW = BuildNode(img, make_pair(ul.first, ul.second + splitH), make_pair(ul.first + splitW, lr.second));
+        SE = BuildNode(img, make_pair(ul.first + splitW, ul.second + splitH), make_pair(lr.first, lr.second));
+    }
 
-	} else {
-		NW = BuildNode(img, make_pair(ul.first, ul.second), make_pair(splitW, splitH));
-		NE = BuildNode(img, make_pair(splitW, ul.second), make_pair(lr.first, splitH));
-		SW = BuildNode(img, make_pair(ul.first, splitH), make_pair(splitW, lr.second));
-		SE = BuildNode(img, make_pair(splitW, splitH), make_pair(lr.first, lr.second));
-	}
+
+
+	// } else if (nodeHeight == 1) {
+	// 	NW = BuildNode(img, make_pair(ul.first, ul.second), make_pair(splitW, lr.second));
+	// 	NE = BuildNode(img, make_pair(splitW, ul.second), make_pair(lr.first, lr.second));
+	// 	SW = nullptr;
+	// 	SE = nullptr;
+	// } else if (nodeWidth == 1) {
+	// 	NW = BuildNode(img, make_pair(ul.first, ul.second), make_pair(lr.first, splitH));
+	// 	NE = nullptr;
+	// 	SW = BuildNode(img, make_pair(ul.first, splitH), make_pair(lr.first, lr.second));
+	// 	SE = nullptr;
+
+	// } else {
+	// 	NW = BuildNode(img, make_pair(ul.first, ul.second), make_pair(splitW, splitH));
+	// 	NE = BuildNode(img, make_pair(splitW, ul.second), make_pair(lr.first, splitH));
+	// 	SW = BuildNode(img, make_pair(ul.first, splitH), make_pair(splitW, lr.second));
+	// 	SE = BuildNode(img, make_pair(splitW, splitH), make_pair(lr.first, lr.second));
+	// }
 
 	Node* newNode = new Node(ul, lr, GetAveragePixel(NW, NE, SW, SE));
+
+
+
+
+
 	newNode -> NW = NW;
 	newNode -> NE = NE;
 	newNode -> SW = SW;
@@ -230,7 +253,24 @@ RGBAPixel QTree::GetAveragePixel(Node* NW, Node* NE, Node* SW, Node* SE){
 	// int neArea = ((NE -> lowRight.first) - (NE -> upLeft.first) * (NE -> lowRight.second)-(NE -> upLeft.second));
 	// int swArea = ((SW -> lowRight.first) - (SW -> upLeft.first) * (SW -> lowRight.second)-(SW -> upLeft.second));
 	// int seArea = ((SE -> lowRight.first) - (SE -> upLeft.first) * (SE -> lowRight.second)-(SE -> upLeft.second));
-
 	
-	return RGBAPixel();
+	int nwArea = ((NW -> lowRight.first) - (NW -> upLeft.first)) * ((NW -> lowRight.second) - (NW -> upLeft.second));
+	int neArea = ((NE -> lowRight.first) - (NE -> upLeft.first)) * ((NE -> lowRight.second) - (NE -> upLeft.second));
+	int swArea = ((SW -> lowRight.first) - (SW -> upLeft.first)) * ((SW -> lowRight.second) - (SW -> upLeft.second));
+	int seArea = ((SE -> lowRight.first) - (SE -> upLeft.first)) * ((SE -> lowRight.second) - (SE -> upLeft.second));
+
+	int totalArea = nwArea + neArea + swArea + seArea;
+
+	RGBAPixel nwP = NW -> avg;
+	RGBAPixel neP = NE -> avg;
+	RGBAPixel swP = SW -> avg;
+	RGBAPixel seP = SE -> avg;
+	
+
+	int redAvg = (nwP.r * nwArea + neP.r * neArea + swP.r * swArea + seP.r * seArea)/totalArea;
+	int greenAvg = (nwP.g * nwArea + neP.g * neArea + swP.g * swArea + seP.g * seArea)/totalArea;
+	int blueAvg = (nwP.b * nwArea + neP.b * neArea + swP.b * swArea + seP.b * seArea)/totalArea;
+	int aAvg = (nwP.a * nwArea + neP.a * neArea + swP.a * swArea + seP.a * seArea)/totalArea;
+	
+	return RGBAPixel(redAvg, greenAvg, blueAvg, aAvg);
 }
