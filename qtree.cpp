@@ -7,7 +7,9 @@
  */
 
 #include "qtree.h"
+#include <iostream>
 
+using namespace std;
 /**
  * Constructor that builds a QTree out of the given PNG.
  * Every leaf in the tree corresponds to a pixel in the PNG.
@@ -46,8 +48,11 @@ QTree::QTree(const PNG& imIn) {
 
 	height = imIn.height();
 	width = imIn.width();
-
+	
+	cout << "reached";
 	root = BuildNode(imIn, make_pair(0, 0), make_pair(width - 1, height - 1));
+
+
 }
 
 /**
@@ -169,45 +174,42 @@ void QTree::Copy(const QTree& other) {
  */
 Node* QTree::BuildNode(const PNG& img, pair<unsigned int, unsigned int> ul, pair<unsigned int, unsigned int> lr) {
 
-	int nodeWidth = ul.first - lr.first;
-	int nodeHeight = ul.second - lr.second;
+	int nodeWidth = lr.first - ul.first;
+	int nodeHeight = lr.second - ul.second;
 
-	if (nodeWidth == 0 && nodeHeight == 0){ 
-		return nullptr;
-	}
+	// if (nodeWidth == 0 && nodeHeight == 0){ 
+	// 	return nullptr;
+	// }
+	// Do we need this case since we never actually reach 0 width AND 0 height
 
-	int biggerWidth = (nodeWidth / 2) + ((nodeWidth % 2) != 0);
-	int biggerHeight = (nodeHeight / 2) + ((nodeHeight % 2) != 0);
-	int smallerWidth = nodeWidth - biggerWidth;
-	int smallerHeight = nodeHeight - biggerHeight; 
+	int splitW = (nodeWidth / 2) + ((nodeWidth % 2) != 0);
+	int splitH = (nodeHeight / 2) + ((nodeHeight % 2) != 0);
 
 	Node root = Node(ul, lr, GetAveragePixel(img, nodeWidth, nodeHeight));
 	
 	
 	if (nodeHeight == 1 && nodeWidth == 1) {
-		root.NW = BuildNode(img, make_pair(ul.first, ul.second), make_pair(biggerWidth, biggerHeight));
+		root.NW = nullptr;
 		root.NE = nullptr;
 		root.SW = nullptr;
 		root.SE = nullptr;
 	} else if (nodeHeight == 1) {
-		root.NW = BuildNode(img, make_pair(ul.first, ul.second), make_pair(biggerWidth, biggerHeight));
-		root.NE = BuildNode(img, make_pair(smallerWidth, ul.second), make_pair(lr.first, biggerHeight));
+		root.NW = BuildNode(img, make_pair(ul.first, ul.second), make_pair(splitW, lr.second));
+		root.NE = BuildNode(img, make_pair(splitW, ul.second), make_pair(lr.first, lr.second));
 		root.SW = nullptr;
 		root.SE = nullptr;
 	} else if (nodeWidth == 1) {
-		root.NW = BuildNode(img, make_pair(ul.first, ul.second), make_pair(biggerWidth, biggerHeight));
+		root.NW = BuildNode(img, make_pair(ul.first, ul.second), make_pair(lr.first, splitH));
 		root.NE = nullptr;
-		root.SW = BuildNode(img, make_pair(ul.first, smallerHeight), make_pair(biggerWidth, lr.second));
+		root.SW = BuildNode(img, make_pair(ul.first, splitH), make_pair(lr.first, lr.second));
 		root.SE = nullptr;
 
 	} else {
-		root.NW = BuildNode(img, make_pair(ul.first, ul.second), make_pair(biggerWidth, biggerHeight));
-		root.NE = BuildNode(img, make_pair(smallerWidth, ul.second), make_pair(lr.first, biggerHeight));
-		root.SW = BuildNode(img, make_pair(ul.first, smallerHeight), make_pair(biggerWidth, lr.second));
-		root.SE = BuildNode(img, make_pair(smallerHeight, smallerWidth), make_pair(lr.first, lr.second));
+		root.NW = BuildNode(img, make_pair(ul.first, ul.second), make_pair(splitW, splitH));
+		root.NE = BuildNode(img, make_pair(splitW, ul.second), make_pair(lr.first, splitH));
+		root.SW = BuildNode(img, make_pair(ul.first, splitH), make_pair(splitW, lr.second));
+		root.SE = BuildNode(img, make_pair(splitW, splitH), make_pair(lr.first, lr.second));
 	}
-
-
 
 	return &root;
 }
