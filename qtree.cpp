@@ -184,22 +184,38 @@ Node* QTree::BuildNode(const PNG& img, pair<unsigned int, unsigned int> ul, pair
 
 	int nodeWidth = lr.first - ul.first;
 	int nodeHeight = lr.second - ul.second;
+	int splitW;
+	int splitH;
 
-	int splitW = (nodeWidth / 2) + ((nodeWidth % 2) != 0);
-	int splitH = (nodeHeight / 2) + ((nodeHeight % 2) != 0);
+	if (nodeWidth == 1 || nodeWidth == 0) {
+		splitW = 0;
+	} else {
+		splitW = (nodeWidth / 2) + ((nodeWidth % 2) != 0);
+	}
+	
+	if (nodeHeight == 1 || nodeHeight == 0) {
+		splitH = 0;
+	} else {
+		splitH = (nodeHeight / 2) + ((nodeHeight % 2) != 0);
+	}	
 
 	Node* NW = nullptr;
 	Node* NE = nullptr;
 	Node* SW = nullptr;
 	Node* SE = nullptr; 
 
-	if ((lr.first - ul.first == 0) && (lr.second - ul.second == 0)) {
-		return new Node(ul, lr, *img.getPixel(ul.first, ul.second));
- 	}
+	if ((nodeWidth == 0) && (nodeHeight == 0)) {
+		Node* newNode = new Node(ul, lr, *img.getPixel(ul.first, ul.second));
 
+		newNode -> NW = NW;
+		newNode -> NE = NE;
+		newNode -> SW = SW;
+		newNode -> SE = SE;
+		return newNode;
+ 	}
 	if (nodeHeight == 0) {
         NW = BuildNode(img, make_pair(ul.first, ul.second), make_pair(ul.first + splitW, lr.second));
-        NE = BuildNode(img, make_pair(ul.first + splitW, ul.second), make_pair(lr.first, lr.second));
+        NE = BuildNode(img, make_pair(ul.first + splitW + 1, ul.second), make_pair(lr.first, lr.second));
     } else if (nodeWidth == 0) {
         NW = BuildNode(img, make_pair(ul.first, ul.second), make_pair(lr.first, ul.second + splitH));
         SW = BuildNode(img, make_pair(ul.first, ul.second + splitH), make_pair(lr.first, lr.second));
@@ -241,6 +257,7 @@ RGBAPixel QTree::GetAveragePixel(Node* NW, Node* NE, Node* SW, Node* SE){
 	} else {
 		nwArea = 0;
 	}
+
 
 	if(NE != nullptr) {
 		neArea = ((NE -> lowRight.first) - (NE -> upLeft.first) + 1) * ((NE -> lowRight.second) - (NE -> upLeft.second) + 1);
