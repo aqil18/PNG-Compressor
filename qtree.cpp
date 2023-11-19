@@ -78,16 +78,6 @@ QTree& QTree::operator=(const QTree& rhs) {
  */
 PNG QTree::Render(unsigned int scale) const {
 
-	PNG render((width-1)*scale, (height-1)*scale);
-
-	
-
-	
-
-
-
-
-
 	return PNG();
 }
 
@@ -194,13 +184,7 @@ Node* QTree::BuildNode(const PNG& img, pair<unsigned int, unsigned int> ul, pair
 	Node* SE = nullptr; 
 
 	if ((nodeWidth == 0) && (nodeHeight == 0)) {
-		Node* newNode = new Node(ul, lr, *img.getPixel(ul.first, ul.second));
-
-		newNode -> NW = NW;
-		newNode -> NE = NE;
-		newNode -> SW = SW;
-		newNode -> SE = SE;
-		return newNode;
+		return new Node(ul, lr, *img.getPixel(ul.first, ul.second));;
  	} else if (nodeHeight == 0) {
         NW = BuildNode(img, make_pair(ul.first, ul.second), make_pair(splitW, lr.second));
         NE = BuildNode(img, make_pair(splitW + 1, ul.second), make_pair(lr.first, splitH));
@@ -279,14 +263,6 @@ RGBAPixel QTree::GetAveragePixel(Node* NW, Node* NE, Node* SW, Node* SE){
 
 }
 
-PNG QTree::RenderNode(PNG render, Node* toRender){
-
-
-	// if (toRender == nullptr) {
-	// 	return nullptr;
-	// }
-
-	
-
-	return render;
+void QTree::Render(Node* subroot, unsigned int scale, PNG &img) const {
+	return;
 }

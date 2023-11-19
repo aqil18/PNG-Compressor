@@ -12,4 +12,4 @@
 // begin your declarations below
 
 RGBAPixel GetAveragePixel(Node* NW, Node* NE, Node* SW, Node* SE);
-PNG RenderNode(PNG render, Node* toRender);
+void Render(Node* subroot, unsigned int scale, PNG &img) const;
