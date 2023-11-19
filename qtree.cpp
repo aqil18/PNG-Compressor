@@ -177,26 +177,19 @@ Node* QTree::BuildNode(const PNG& img, pair<unsigned int, unsigned int> ul, pair
 	int splitW = (nodeWidth / 2) + ((nodeWidth % 2) != 0);
 	int splitH = (nodeHeight / 2) + ((nodeHeight % 2) != 0);
 
-	Node* NW;
-	Node* NE;
-	Node* SW;
-	Node* SE; 
+	Node* NW = nullptr;
+	Node* NE = nullptr;
+	Node* SW = nullptr;
+	Node* SE = nullptr; 
 	
 	if (nodeHeight == 1 && nodeWidth == 1) {
-		NW = new Node(make_pair(ul.first, ul.second), make_pair(ul.first, ul.second), *img.getPixel(ul.first, ul.second));
-		NE = new Node(make_pair(lr.first, ul.second), make_pair(lr.first, ul.second), *img.getPixel(lr.first, ul.second));
-		SW = new Node(make_pair(ul.first, lr.second), make_pair(ul.first, lr.second), *img.getPixel(ul.first, lr.second));
-		SE = new Node(make_pair(lr.first, lr.second), make_pair(lr.first, lr.second), *img.getPixel(lr.first, lr.second));
+		NW = new Node(make_pair(ul.first, ul.second), make_pair(lr.first, lr.second), RGBAPixel());
  	} else if (nodeHeight == 1) {
         NW = BuildNode(img, make_pair(ul.first, ul.second), make_pair(ul.first + splitW, lr.second));
         NE = BuildNode(img, make_pair(ul.first + splitW, ul.second), make_pair(lr.first, lr.second));
-        SW = nullptr;
-        SE = nullptr;
     } else if (nodeWidth == 1) {
         NW = BuildNode(img, make_pair(ul.first, ul.second), make_pair(lr.first, ul.second + splitH));
-        NE = nullptr;
         SW = BuildNode(img, make_pair(ul.first, ul.second + splitH), make_pair(lr.first, lr.second));
-        SE = nullptr;
     } else {
         NW = BuildNode(img, make_pair(ul.first, ul.second), make_pair(ul.first + splitW, ul.second + splitH));
         NE = BuildNode(img, make_pair(ul.first + splitW, ul.second), make_pair(lr.first, ul.second + splitH));
@@ -230,25 +223,25 @@ RGBAPixel QTree::GetAveragePixel(Node* NW, Node* NE, Node* SW, Node* SE){
 	RGBAPixel swP;
 	RGBAPixel seP;
 
-	nwArea = ((NW -> lowRight.first) - (NW -> upLeft.first)) * ((NW -> lowRight.second) - (NW -> upLeft.second));
+	nwArea = ((NW -> lowRight.first) - (NW -> upLeft.first) + 1) * ((NW -> lowRight.second) - (NW -> upLeft.second) + 1);
 	nwP = NW -> avg;
 
 	if(NE != nullptr) {
-		neArea = ((NE -> lowRight.first) - (NE -> upLeft.first)) * ((NE -> lowRight.second) - (NE -> upLeft.second));
+		neArea = ((NE -> lowRight.first) - (NE -> upLeft.first) + 1) * ((NE -> lowRight.second) - (NE -> upLeft.second) + 1);
 		neP = NE -> avg;
 	} else {
 		neArea = 0;
 	}
 	
 	if(SW != nullptr) {
-		swArea = ((SW -> lowRight.first) - (SW -> upLeft.first)) * ((SW -> lowRight.second) - (SW -> upLeft.second));
+		swArea = ((SW -> lowRight.first) - (SW -> upLeft.first) + 1) * ((SW -> lowRight.second) - (SW -> upLeft.second) + 1);
 		swP = SW -> avg;
 	} else {
 		swArea = 0;
 	}
 	
 	if(SE != nullptr) {
-		seArea = ((SE -> lowRight.first) - (SE -> upLeft.first)) * ((SE -> lowRight.second) - (SE -> upLeft.second));
+		seArea = ((SE -> lowRight.first) - (SE -> upLeft.first) + 1) * ((SE -> lowRight.second) - (SE -> upLeft.second) + 1);
 		seP = SE -> avg;
 	} else {
 		seArea = 0;
@@ -256,18 +249,11 @@ RGBAPixel QTree::GetAveragePixel(Node* NW, Node* NE, Node* SW, Node* SE){
 	
 	int totalArea = nwArea + neArea + swArea + seArea;
 
-
-
-	if (totalArea != 0) {
-		cout << totalArea << endl;
-		double redAvg = (nwP.r * nwArea + neP.r * neArea + swP.r * swArea + seP.r * seArea)/totalArea;
-		double greenAvg = (nwP.g * nwArea + neP.g * neArea + swP.g * swArea + seP.g * seArea)/totalArea;
-		double blueAvg = (nwP.b * nwArea + neP.b * neArea + swP.b * swArea + seP.b * seArea)/totalArea;
-		double aAvg = (nwP.a * nwArea + neP.a * neArea + swP.a * swArea + seP.a * seArea)/totalArea;
-		RGBAPixel newP(redAvg, greenAvg, blueAvg, aAvg);
-		return newP;
-	} else {
-		return nwP;
-	}
+	double redAvg = (nwP.r * nwArea + neP.r * neArea + swP.r * swArea + seP.r * seArea)/totalArea;
+	double greenAvg = (nwP.g * nwArea + neP.g * neArea + swP.g * swArea + seP.g * seArea)/totalArea;
+	double blueAvg = (nwP.b * nwArea + neP.b * neArea + swP.b * swArea + seP.b * seArea)/totalArea;
+	double aAvg = (nwP.a * nwArea + neP.a * neArea + swP.a * swArea + seP.a * seArea)/totalArea;
+	RGBAPixel newP(redAvg, greenAvg, blueAvg, aAvg);
+	return newP;
 
 }
