@@ -88,7 +88,7 @@ PNG QTree::Render(unsigned int scale) const {
 
 
 
-	return RenderNode(render, root);
+	return PNG();
 }
 
 /**
@@ -180,6 +180,8 @@ void QTree::Copy(const QTree& other) {
  */
 Node* QTree::BuildNode(const PNG& img, pair<unsigned int, unsigned int> ul, pair<unsigned int, unsigned int> lr) {
 
+
+
 	int nodeWidth = lr.first - ul.first;
 	int nodeHeight = lr.second - ul.second;
 
@@ -190,13 +192,15 @@ Node* QTree::BuildNode(const PNG& img, pair<unsigned int, unsigned int> ul, pair
 	Node* NE = nullptr;
 	Node* SW = nullptr;
 	Node* SE = nullptr; 
-	
-	if (nodeHeight == 1 && nodeWidth == 1) {
-		NW = new Node(make_pair(ul.first, ul.second), make_pair(lr.first, lr.second), RGBAPixel());
- 	} else if (nodeHeight == 1) {
+
+	if ((lr.first - ul.first == 0) && (lr.second - ul.second == 0)) {
+		return new Node(ul, lr, *img.getPixel(ul.first, ul.second));
+ 	}
+
+	if (nodeHeight == 0) {
         NW = BuildNode(img, make_pair(ul.first, ul.second), make_pair(ul.first + splitW, lr.second));
         NE = BuildNode(img, make_pair(ul.first + splitW, ul.second), make_pair(lr.first, lr.second));
-    } else if (nodeWidth == 1) {
+    } else if (nodeWidth == 0) {
         NW = BuildNode(img, make_pair(ul.first, ul.second), make_pair(lr.first, ul.second + splitH));
         SW = BuildNode(img, make_pair(ul.first, ul.second + splitH), make_pair(lr.first, lr.second));
     } else {
@@ -214,7 +218,6 @@ Node* QTree::BuildNode(const PNG& img, pair<unsigned int, unsigned int> ul, pair
 	newNode -> SE = SE;
 
 	return newNode;
-
 }
 
 /*********************************************************/
@@ -232,8 +235,12 @@ RGBAPixel QTree::GetAveragePixel(Node* NW, Node* NE, Node* SW, Node* SE){
 	RGBAPixel swP;
 	RGBAPixel seP;
 
-	nwArea = ((NW -> lowRight.first) - (NW -> upLeft.first) + 1) * ((NW -> lowRight.second) - (NW -> upLeft.second) + 1);
-	nwP = NW -> avg;
+	if (NW != nullptr) {
+		nwArea = ((NW -> lowRight.first) - (NW -> upLeft.first) + 1) * ((NW -> lowRight.second) - (NW -> upLeft.second) + 1);
+		nwP = NW -> avg;
+	} else {
+		nwArea = 0;
+	}
 
 	if(NE != nullptr) {
 		neArea = ((NE -> lowRight.first) - (NE -> upLeft.first) + 1) * ((NE -> lowRight.second) - (NE -> upLeft.second) + 1);
@@ -270,9 +277,9 @@ RGBAPixel QTree::GetAveragePixel(Node* NW, Node* NE, Node* SW, Node* SE){
 PNG QTree::RenderNode(PNG render, Node* toRender){
 
 
-	if (toRender == nullptr) {
-		return nullptr;
-	}
+	// if (toRender == nullptr) {
+	// 	return nullptr;
+	// }
 
 	
 
