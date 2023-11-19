@@ -30,7 +30,7 @@ void TestPrune(double tol);
 int main(int argc, char* argv[]) {
 
 	TestBuildRender(1);
-	// TestBuildRender(6);
+	TestBuildRender(6);
 	// TestFlipHorizontal();
 	// TestRotateCCW();
 	// TestPrune(0.01);

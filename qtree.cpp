@@ -60,8 +60,9 @@ QTree::QTree(const PNG& imIn) {
  * @param rhs The right hand side of the assignment statement.
  */
 QTree& QTree::operator=(const QTree& rhs) {
-	// ADD YOUR IMPLEMENTATION BELOW
-	
+	// root = rhs.root;
+	// height = rhs.height;
+	// width = rhs.width;	
 }
 
 /**
@@ -77,8 +78,9 @@ QTree& QTree::operator=(const QTree& rhs) {
  * @pre scale > 0
  */
 PNG QTree::Render(unsigned int scale) const {
-
-	return PNG();
+	PNG output =  PNG(width*scale, height*scale);
+	Render(root, scale, output);
+	return output;
 }
 
 /**
@@ -264,5 +266,27 @@ RGBAPixel QTree::GetAveragePixel(Node* NW, Node* NE, Node* SW, Node* SE){
 }
 
 void QTree::Render(Node* subroot, unsigned int scale, PNG &img) const {
-	return;
+
+
+	if (subroot == nullptr) {
+		return;
+	}
+
+	if (subroot -> NW == nullptr) {
+			RGBAPixel nodeP = subroot -> avg;
+			for (int x = 0; x < scale; x++) {
+				for(int y = 0; y < scale; y++){
+					RGBAPixel* imgP = img.getPixel((scale*subroot -> lowRight.first) + x, (scale*subroot -> lowRight.second) + y);
+					imgP -> r = nodeP.r;
+					imgP -> g = nodeP.g;
+					imgP -> b = nodeP.b;
+					imgP -> a = nodeP.a;
+				}
+			}
+	} else {
+		Render(subroot -> NW, scale, img);
+		Render(subroot -> NE, scale, img);
+		Render(subroot -> SW, scale, img);
+		Render(subroot -> SE, scale, img);
+	}
 }
