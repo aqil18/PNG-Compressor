@@ -52,19 +52,19 @@ void TestBuildRender(unsigned int scale) {
 
 	cout << "Constructing QTree from image... ";
 	QTree t(input);
-	// cout << "done." << endl;
+	cout << "done." << endl;
 
-	// cout << "Rendering tree to PNG at x" << scale << " scale... ";
-	// PNG output = t.Render(scale);
-	// cout << "done." << endl;
+	cout << "Rendering tree to PNG at x" << scale << " scale... ";
+	PNG output = t.Render(scale);
+	cout << "done." << endl;
 
-	// // write output PNG
-	// string outfilename = "images-output/malachi-render_x" + to_string(scale) + ".png";
-	// cout << "Writing rendered PNG to file... ";
-	// output.writeToFile(outfilename);
-	// cout << "done." << endl;
+	// write output PNG
+	string outfilename = "images-output/malachi-render_x" + to_string(scale) + ".png";
+	cout << "Writing rendered PNG to file... ";
+	output.writeToFile(outfilename);
+	cout << "done." << endl;
 
-	// cout << "Exiting TestBuildRender.\n" << endl;
+	cout << "Exiting TestBuildRender.\n" << endl;
 }
 
 void TestFlipHorizontal() {

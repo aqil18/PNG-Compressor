@@ -12,3 +12,4 @@
 // begin your declarations below
 
 RGBAPixel GetAveragePixel(Node* NW, Node* NE, Node* SW, Node* SE);
+PNG QTree::RenderNode(PNG render, Node* toRender);

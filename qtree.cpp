@@ -45,9 +45,8 @@ using namespace std;
  * region and do not overlap.
  */
 QTree::QTree(const PNG& imIn) {
-
-	height = imIn.height();
 	width = imIn.width();
+	height = imIn.height();
 	
 	root = BuildNode(imIn, make_pair(0, 0), make_pair(width-1, height-1));
 }
@@ -78,8 +77,18 @@ QTree& QTree::operator=(const QTree& rhs) {
  * @pre scale > 0
  */
 PNG QTree::Render(unsigned int scale) const {
-	// Replace the line below with your implementation
-	return PNG();
+
+	PNG render((width-1)*scale, (height-1)*scale);
+
+	
+
+	
+
+
+
+
+
+	return RenderNode(render, root);
 }
 
 /**
@@ -256,4 +265,16 @@ RGBAPixel QTree::GetAveragePixel(Node* NW, Node* NE, Node* SW, Node* SE){
 	RGBAPixel newP(redAvg, greenAvg, blueAvg, aAvg);
 	return newP;
 
+}
+
+PNG QTree::RenderNode(PNG render, Node* toRender){
+
+
+	if (toRender == nullptr) {
+		return nullptr;
+	}
+
+	
+
+	return render;
 }
