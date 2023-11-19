@@ -184,20 +184,9 @@ Node* QTree::BuildNode(const PNG& img, pair<unsigned int, unsigned int> ul, pair
 
 	int nodeWidth = lr.first - ul.first;
 	int nodeHeight = lr.second - ul.second;
-	int splitW;
-	int splitH;
 
-	if (nodeWidth == 1 || nodeWidth == 0) {
-		splitW = 0;
-	} else {
-		splitW = (nodeWidth / 2) + ((nodeWidth % 2) != 0);
-	}
-	
-	if (nodeHeight == 1 || nodeHeight == 0) {
-		splitH = 0;
-	} else {
-		splitH = (nodeHeight / 2) + ((nodeHeight % 2) != 0);
-	}	
+	int splitW = ul.first + (nodeWidth)/2;
+	int splitH = ul.second + (nodeWidth)/2;
 
 	Node* NW = nullptr;
 	Node* NE = nullptr;
@@ -212,18 +201,17 @@ Node* QTree::BuildNode(const PNG& img, pair<unsigned int, unsigned int> ul, pair
 		newNode -> SW = SW;
 		newNode -> SE = SE;
 		return newNode;
- 	}
-	if (nodeHeight == 0) {
-        NW = BuildNode(img, make_pair(ul.first, ul.second), make_pair(ul.first + splitW, lr.second));
-        NE = BuildNode(img, make_pair(ul.first + splitW + 1, ul.second), make_pair(lr.first, lr.second));
+ 	} else if (nodeHeight == 0) {
+        NW = BuildNode(img, make_pair(ul.first, ul.second), make_pair(splitW, lr.second));
+        NE = BuildNode(img, make_pair(splitW + 1, ul.second), make_pair(lr.first, splitH));
     } else if (nodeWidth == 0) {
-        NW = BuildNode(img, make_pair(ul.first, ul.second), make_pair(lr.first, ul.second + splitH));
-        SW = BuildNode(img, make_pair(ul.first, ul.second + splitH), make_pair(lr.first, lr.second));
+        NW = BuildNode(img, make_pair(ul.first, ul.second), make_pair(splitW, splitH));
+        SW = BuildNode(img, make_pair(ul.first, splitH + 1), make_pair(splitW, lr.second));
     } else {
-        NW = BuildNode(img, make_pair(ul.first, ul.second), make_pair(ul.first + splitW, ul.second + splitH));
-        NE = BuildNode(img, make_pair(ul.first + splitW, ul.second), make_pair(lr.first, ul.second + splitH));
-        SW = BuildNode(img, make_pair(ul.first, ul.second + splitH), make_pair(ul.first + splitW, lr.second));
-        SE = BuildNode(img, make_pair(ul.first + splitW, ul.second + splitH), make_pair(lr.first, lr.second));
+        NW = BuildNode(img, make_pair(ul.first, ul.second), make_pair(splitW, splitH));
+        NE = BuildNode(img, make_pair(splitW + 1, ul.second), make_pair(lr.first, splitH));
+        SW = BuildNode(img, make_pair(ul.first, splitH + 1), make_pair(splitW, lr.second));
+        SE = BuildNode(img, make_pair(splitW + 1, splitH + 1), make_pair(lr.first, lr.second));
     }
 
 	Node* newNode = new Node(ul, lr, GetAveragePixel(NW, NE, SW, SE));
