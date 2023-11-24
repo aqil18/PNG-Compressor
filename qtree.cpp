@@ -301,15 +301,16 @@ void QTree::FlipHorizontal(Node* &subroot) {
 	if (subroot == nullptr) {
 		return;
 	}
+	
 	pair<unsigned int, unsigned int> ul; 
     pair<unsigned int, unsigned int> lr;
 
 	if (subroot -> NW != nullptr) {
 		ul = subroot -> NW -> upLeft;
 		lr = subroot -> NW -> lowRight;
-		unsigned int temp = ul.first;
-		ul.first = lr.first;
-		lr.first = temp;
+		unsigned int temp = lr.first;
+		lr.first = width - ul.first - 1;
+		ul.first = width - temp - 1;
 		subroot -> NW -> upLeft = ul;
 		subroot -> NW -> lowRight = lr;
 
@@ -318,9 +319,9 @@ void QTree::FlipHorizontal(Node* &subroot) {
 	if (subroot -> NE != nullptr) {
 		ul = subroot -> NE -> upLeft;
 		lr = subroot -> NE -> lowRight;
-		unsigned int temp = ul.first;
-		ul.first = lr.first;
-		lr.first = temp;		
+		unsigned int temp = lr.first;
+		lr.first = width - ul.first - 1;
+		ul.first = width - temp - 1;	
 		subroot -> NE -> upLeft = ul;
 		subroot -> NE -> lowRight = lr;
 	}
@@ -328,9 +329,9 @@ void QTree::FlipHorizontal(Node* &subroot) {
 	if (subroot -> SW != nullptr) {
 		ul = subroot -> SW -> upLeft;
 		lr = subroot -> SW -> lowRight;
-		unsigned int temp = ul.first;
-		ul.first = lr.first;
-		lr.first = temp;
+		unsigned int temp = lr.first;
+		lr.first = width - ul.first - 1;
+		ul.first = width - temp - 1;
 		subroot -> SW -> upLeft = ul;
 		subroot -> SW -> lowRight = lr;
 	}
@@ -338,13 +339,13 @@ void QTree::FlipHorizontal(Node* &subroot) {
 	if (subroot -> SE != nullptr) {
 		ul = subroot -> SE -> upLeft;
 		lr = subroot -> SE -> lowRight;
-		unsigned int temp = ul.first;
-		ul.first = lr.first;
-		lr.first = temp;
+		unsigned int temp = lr.first;
+		lr.first = width - ul.first - 1;
+		ul.first = width - temp - 1;
 		subroot -> SE -> upLeft = ul;
 		subroot -> SE -> lowRight = lr;
 	}
-	
+
 	Node* nwTemp = subroot -> NW;
 	subroot -> NW = subroot -> NE;
 	subroot -> NE = nwTemp;
@@ -352,12 +353,10 @@ void QTree::FlipHorizontal(Node* &subroot) {
 	subroot -> SW = subroot -> SE;
 	subroot -> SE = swTemp;
 	
-
 	FlipHorizontal(subroot -> NW);
 	FlipHorizontal(subroot -> NE);
 	FlipHorizontal(subroot -> SW);
 	FlipHorizontal(subroot -> SE);
-
 }
 
 
