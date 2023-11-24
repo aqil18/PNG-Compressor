@@ -60,9 +60,9 @@ QTree::QTree(const PNG& imIn) {
  * @param rhs The right hand side of the assignment statement.
  */
 QTree& QTree::operator=(const QTree& rhs) {
-	// root = rhs.root;
-	// height = rhs.height;
-	// width = rhs.width;	
+	Clear();
+	Copy(rhs);
+	return *this;
 }
 
 /**
@@ -116,8 +116,7 @@ void QTree::Prune(double tolerance) {
  *  You may want a recursive helper function for this one.
  */
 void QTree::FlipHorizontal() {
-	// ADD YOUR IMPLEMENTATION BELOW
-	
+	FlipHorizontal(root);
 }
 
 /**
@@ -148,8 +147,7 @@ void QTree::RotateCCW() {
  * You may want a recursive helper function for this one.
  */
 void QTree:: Clear() {
-	// ADD YOUR IMPLEMENTATION BELOW
-	
+	Clear(root);	
 }
 
 /**
@@ -159,8 +157,15 @@ void QTree:: Clear() {
  * @param other The QTree to be copied.
  */
 void QTree::Copy(const QTree& other) {
-	// ADD YOUR IMPLEMENTATION BELOW
-	
+	if (other.root == nullptr) {
+		root = nullptr;
+		height = 0;
+		width = 0;
+	} else {
+		height = other.height;
+		width = other.width;
+		CopyNodes(root, other.root);
+	}	
 }
 
 /**
@@ -288,5 +293,94 @@ void QTree::Render(Node* subroot, unsigned int scale, PNG &img) const {
 		Render(subroot -> NE, scale, img);
 		Render(subroot -> SW, scale, img);
 		Render(subroot -> SE, scale, img);
+	}
+}
+
+void QTree::FlipHorizontal(Node* &subroot) {
+
+	if (subroot == nullptr) {
+		return;
+	}
+	pair<unsigned int, unsigned int> ul; 
+    pair<unsigned int, unsigned int> lr;
+
+	if (subroot -> NW != nullptr) {
+		ul = subroot -> NW -> upLeft;
+		lr = subroot -> NW -> lowRight;
+		unsigned int temp = ul.first;
+		ul.first = lr.first;
+		lr.first = temp;
+		subroot -> NW -> upLeft = ul;
+		subroot -> NW -> lowRight = lr;
+
+	}
+
+	if (subroot -> NE != nullptr) {
+		ul = subroot -> NE -> upLeft;
+		lr = subroot -> NE -> lowRight;
+		unsigned int temp = ul.first;
+		ul.first = lr.first;
+		lr.first = temp;		
+		subroot -> NE -> upLeft = ul;
+		subroot -> NE -> lowRight = lr;
+	}
+
+	if (subroot -> SW != nullptr) {
+		ul = subroot -> SW -> upLeft;
+		lr = subroot -> SW -> lowRight;
+		unsigned int temp = ul.first;
+		ul.first = lr.first;
+		lr.first = temp;
+		subroot -> SW -> upLeft = ul;
+		subroot -> SW -> lowRight = lr;
+	}
+
+	if (subroot -> SE != nullptr) {
+		ul = subroot -> SE -> upLeft;
+		lr = subroot -> SE -> lowRight;
+		unsigned int temp = ul.first;
+		ul.first = lr.first;
+		lr.first = temp;
+		subroot -> SE -> upLeft = ul;
+		subroot -> SE -> lowRight = lr;
+	}
+	
+	Node* nwTemp = subroot -> NW;
+	subroot -> NW = subroot -> NE;
+	subroot -> NE = nwTemp;
+	Node* swTemp = subroot -> SW;
+	subroot -> SW = subroot -> SE;
+	subroot -> SE = swTemp;
+	
+
+	FlipHorizontal(subroot -> NW);
+	FlipHorizontal(subroot -> NE);
+	FlipHorizontal(subroot -> SW);
+	FlipHorizontal(subroot -> SE);
+
+}
+
+
+void QTree::CopyNodes(Node* &subroot, Node* other) {
+	if (other == nullptr) {
+		subroot = nullptr;
+	} else {
+		subroot = new Node(other->upLeft, other->lowRight, other->avg);
+		CopyNodes(subroot->NW, other->NW);
+		CopyNodes(subroot->NE, other->NE);
+		CopyNodes(subroot->SW, other->SW);
+		CopyNodes(subroot->SE, other->SE);
+	}
+}
+
+void QTree::Clear(Node* &subroot) {
+	if (subroot != nullptr) {
+		Clear(subroot->NW);
+		Clear(subroot->NE);
+		Clear(subroot->SW);
+		Clear(subroot->SE);
+
+		delete subroot;
+		subroot = nullptr;
 	}
 }
