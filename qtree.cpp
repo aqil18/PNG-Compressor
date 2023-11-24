@@ -237,7 +237,6 @@ RGBAPixel QTree::GetAveragePixel(Node* NW, Node* NE, Node* SW, Node* SE){
 		nwArea = 0;
 	}
 
-
 	if(NE != nullptr) {
 		neArea = ((NE -> lowRight.first) - (NE -> upLeft.first) + 1) * ((NE -> lowRight.second) - (NE -> upLeft.second) + 1);
 		neP = NE -> avg;
@@ -277,7 +276,10 @@ void QTree::Render(Node* subroot, unsigned int scale, PNG &img) const {
 		return;
 	}
 
-	if (subroot -> NW == nullptr) {
+	if (subroot -> NW == nullptr && 
+	subroot -> NE == nullptr && 
+	subroot -> SW == nullptr && 
+	subroot -> SE == nullptr ) {
 			RGBAPixel nodeP = subroot -> avg;
 			for (int x = 0; x < scale; x++) {
 				for(int y = 0; y < scale; y++){
