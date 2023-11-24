@@ -32,7 +32,7 @@ int main(int argc, char* argv[]) {
 	TestBuildRender(1);
 	TestBuildRender(6);
 	TestFlipHorizontal();
-	// TestRotateCCW();
+	TestRotateCCW();
 	// TestPrune(0.01);
 	// TestPrune(0.05);
 

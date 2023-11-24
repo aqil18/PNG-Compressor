@@ -137,8 +137,10 @@ void QTree::FlipHorizontal() {
  *  You may want a recursive helper function for this one.
  */
 void QTree::RotateCCW() {
-	// ADD YOUR IMPLEMENTATION BELOW
-	
+	int temp = width;
+	width = height;
+	height = temp;
+	RotateCCW(root);	
 }
 
 /**
@@ -297,6 +299,84 @@ void QTree::Render(Node* subroot, unsigned int scale, PNG &img) const {
 		Render(subroot -> SE, scale, img);
 	}
 }
+
+void QTree::RotateCCW(Node* &subroot) {
+	if (subroot == nullptr) {
+		return;
+	}
+
+	pair<unsigned int, unsigned int> ul; 
+    pair<unsigned int, unsigned int> lr;
+
+	if (subroot -> NW != nullptr) {
+		ul = subroot -> NW -> upLeft;
+		lr = subroot -> NW -> lowRight;
+		unsigned int tempu = ul.second;
+		unsigned int templ = lr.second;
+		ul.second = height - lr.first - 1;
+		lr.second = height - ul.first - 1;
+		ul.first = tempu;
+		lr.first = templ;
+		subroot -> NW -> upLeft = ul;
+		subroot -> NW -> lowRight = lr;
+
+	}
+
+	if (subroot -> NE != nullptr) {
+		ul = subroot -> NE -> upLeft;
+		lr = subroot -> NE -> lowRight;
+		unsigned int tempu = ul.second;
+		unsigned int templ = lr.second;
+		ul.second = height - lr.first - 1;
+		lr.second = height - ul.first - 1;
+		ul.first = tempu;
+		lr.first = templ;
+		subroot -> NE -> upLeft = ul;
+		subroot -> NE -> lowRight = lr;
+	}
+
+	if (subroot -> SW != nullptr) {
+		ul = subroot -> SW -> upLeft;
+		lr = subroot -> SW -> lowRight;
+		unsigned int tempu = ul.second;
+		unsigned int templ = lr.second;
+		ul.second = height - lr.first - 1;
+		lr.second = height - ul.first - 1;
+		ul.first = tempu;
+		lr.first = templ;
+		subroot -> SW -> upLeft = ul;
+		subroot -> SW -> lowRight = lr;
+	}
+
+	if (subroot -> SE != nullptr) {
+		ul = subroot -> SE -> upLeft;
+		lr = subroot -> SE -> lowRight;
+		unsigned int tempu = ul.second;
+		unsigned int templ = lr.second;
+		ul.second = height - lr.first - 1;
+		lr.second = height - ul.first - 1;
+		ul.first = tempu;
+		lr.first = templ;
+		subroot -> SE -> upLeft = ul;
+		subroot -> SE -> lowRight = lr;
+	}
+
+
+	Node* nwTemp = subroot -> NW;
+	Node* seTemp = subroot -> SE;
+	subroot -> NW = subroot -> NE;
+	subroot -> SE = subroot -> SW;
+	subroot -> NE = seTemp;
+	subroot -> SW = nwTemp;
+
+	
+	RotateCCW(subroot -> NW);
+	RotateCCW(subroot -> NE);
+	RotateCCW(subroot -> SW);
+	RotateCCW(subroot -> SE);
+
+}
+
 
 void QTree::FlipHorizontal(Node* &subroot) {
 

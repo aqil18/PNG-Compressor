@@ -14,5 +14,6 @@
 RGBAPixel GetAveragePixel(Node* NW, Node* NE, Node* SW, Node* SE);
 void Render(Node* subroot, unsigned int scale, PNG &img) const;
 void FlipHorizontal(Node* &subroot);
+void RotateCCW(Node* &subroot);
 void CopyNodes(Node* &subroot, Node* other);
 void Clear(Node* &subroot);
