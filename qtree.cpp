@@ -182,7 +182,7 @@ Node* QTree::BuildNode(const PNG& img, pair<unsigned int, unsigned int> ul, pair
 	int nodeHeight = lr.second - ul.second;
 
 	int splitW = ul.first + (nodeWidth)/2;
-	int splitH = ul.second + (nodeWidth)/2;
+	int splitH = ul.second + (nodeHeight)/2;
 
 	Node* NW = nullptr;
 	Node* NE = nullptr;
