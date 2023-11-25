@@ -283,8 +283,8 @@ void QTree::Render(Node* subroot, unsigned int scale, PNG &img) const {
 
 		for (int x = 0; x <= nodeWidth; x++) {
 			for (int y = 0; y <= nodeHeight; y++){
-				for (int xx = 0; xx < scale; xx++) {
-					for(int yy = 0; yy < scale; yy++){
+				for (unsigned int xx = 0; xx < scale; xx++) {
+					for(unsigned int yy = 0; yy < scale; yy++){
 						RGBAPixel* imgP = img.getPixel((scale*subroot -> upLeft.first) + x + xx, (scale*subroot -> upLeft.second) + y + yy);
 						imgP -> r = nodeP.r;
 						imgP -> g = nodeP.g;
