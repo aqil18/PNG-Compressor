@@ -97,8 +97,7 @@ PNG QTree::Render(unsigned int scale) const {
  * @pre this tree has not previously been pruned, nor is copied from a previously pruned tree.
  */
 void QTree::Prune(double tolerance) {
-	// ADD YOUR IMPLEMENTATION BELOW
-	
+	Prune(root, tolerance);	
 }
 
 /**
@@ -179,8 +178,6 @@ void QTree::Copy(const QTree& other) {
  */
 Node* QTree::BuildNode(const PNG& img, pair<unsigned int, unsigned int> ul, pair<unsigned int, unsigned int> lr) {
 
-
-
 	int nodeWidth = lr.first - ul.first;
 	int nodeHeight = lr.second - ul.second;
 
@@ -194,17 +191,18 @@ Node* QTree::BuildNode(const PNG& img, pair<unsigned int, unsigned int> ul, pair
 
 	if ((nodeWidth == 0) && (nodeHeight == 0)) {
 		return new Node(ul, lr, *img.getPixel(ul.first, ul.second));;
- 	} else if (nodeHeight == 0) {
-        NW = BuildNode(img, make_pair(ul.first, ul.second), make_pair(splitW, lr.second));
+ 	} else if (nodeWidth != 0 && nodeHeight !=  0) {
+		NW = BuildNode(img, make_pair(ul.first, ul.second), make_pair(splitW, splitH));
         NE = BuildNode(img, make_pair(splitW + 1, ul.second), make_pair(lr.first, splitH));
+        SW = BuildNode(img, make_pair(ul.first, splitH + 1), make_pair(splitW, lr.second));
+        SE = BuildNode(img, make_pair(splitW + 1, splitH + 1), make_pair(lr.first, lr.second));
+
     } else if (nodeWidth == 0) {
         NW = BuildNode(img, make_pair(ul.first, ul.second), make_pair(splitW, splitH));
         SW = BuildNode(img, make_pair(ul.first, splitH + 1), make_pair(splitW, lr.second));
     } else {
-        NW = BuildNode(img, make_pair(ul.first, ul.second), make_pair(splitW, splitH));
+		NW = BuildNode(img, make_pair(ul.first, ul.second), make_pair(splitW, lr.second));
         NE = BuildNode(img, make_pair(splitW + 1, ul.second), make_pair(lr.first, splitH));
-        SW = BuildNode(img, make_pair(ul.first, splitH + 1), make_pair(splitW, lr.second));
-        SE = BuildNode(img, make_pair(splitW + 1, splitH + 1), make_pair(lr.first, lr.second));
     }
 
 	Node* newNode = new Node(ul, lr, GetAveragePixel(NW, NE, SW, SE));
@@ -272,32 +270,39 @@ RGBAPixel QTree::GetAveragePixel(Node* NW, Node* NE, Node* SW, Node* SE){
 }
 
 void QTree::Render(Node* subroot, unsigned int scale, PNG &img) const {
-
-
 	if (subroot == nullptr) {
 		return;
-	}
+	}	
 
 	if (subroot -> NW == nullptr && 
 	subroot -> NE == nullptr && 
 	subroot -> SW == nullptr && 
-	subroot -> SE == nullptr ) {
-			RGBAPixel nodeP = subroot -> avg;
-			for (int x = 0; x < scale; x++) {
-				for(int y = 0; y < scale; y++){
-					RGBAPixel* imgP = img.getPixel((scale*subroot -> lowRight.first) + x, (scale*subroot -> lowRight.second) + y);
-					imgP -> r = nodeP.r;
-					imgP -> g = nodeP.g;
-					imgP -> b = nodeP.b;
-					imgP -> a = nodeP.a;
+	subroot -> SE == nullptr) {
+		int nodeWidth = subroot -> lowRight.first - subroot -> upLeft.first;
+		int nodeHeight = subroot -> lowRight.second - subroot -> upLeft.second;
+		RGBAPixel nodeP = subroot -> avg;
+
+		for (int x = 0; x <= nodeWidth; x++) {
+			for (int y = 0; y <= nodeHeight; y++){
+				for (int xx = 0; xx < scale; xx++) {
+					for(int yy = 0; yy < scale; yy++){
+						RGBAPixel* imgP = img.getPixel((scale*subroot -> upLeft.first) + x + xx, (scale*subroot -> upLeft.second) + y + yy);
+						imgP -> r = nodeP.r;
+						imgP -> g = nodeP.g;
+						imgP -> b = nodeP.b;
+						imgP -> a = nodeP.a;
+					}
 				}
 			}
+		}
+		
 	} else {
 		Render(subroot -> NW, scale, img);
 		Render(subroot -> NE, scale, img);
 		Render(subroot -> SW, scale, img);
 		Render(subroot -> SE, scale, img);
 	}
+	
 }
 
 void QTree::RotateCCW(Node* &subroot) {
@@ -465,3 +470,51 @@ void QTree::Clear(Node* &subroot) {
 		subroot = nullptr;
 	}
 }
+
+
+void QTree::Prune(Node* &subroot, double tolerance) {
+
+	if (subroot == nullptr) {
+		return;
+	}
+
+	RGBAPixel nodeP = subroot -> avg;
+
+	if (ValidPrune(subroot->NW, nodeP, tolerance) &&
+		ValidPrune(subroot->NE, nodeP, tolerance) &&
+		ValidPrune(subroot->SW, nodeP, tolerance) &&
+		ValidPrune(subroot->SE, nodeP, tolerance)) {
+		Clear(subroot -> NW);
+		Clear(subroot -> NE);
+		Clear(subroot -> SW);
+		Clear(subroot -> SE);
+	} else {
+		Prune(subroot -> NW, tolerance);
+		Prune(subroot -> NE, tolerance);
+		Prune(subroot -> SW, tolerance);
+		Prune(subroot -> SE, tolerance);
+	}
+
+	
+}
+
+
+bool QTree::ValidPrune(Node* subroot, RGBAPixel nodeP, double tolerance) {
+	if (subroot == nullptr) {
+		return true;
+	}
+
+	if (subroot -> NW == nullptr && 
+	subroot -> NE == nullptr && 
+	subroot -> SW == nullptr && 
+	subroot -> SE == nullptr) {
+		//Check whether that leaf is less than tolerance
+		return nodeP.distanceTo(subroot -> avg) <= tolerance;
+	} else {
+		return ValidPrune(subroot->NW, nodeP, tolerance) && 
+		ValidPrune(subroot->NE, nodeP, tolerance) && 
+		ValidPrune(subroot->SW, nodeP, tolerance) && 
+		ValidPrune(subroot->SE, nodeP, tolerance);
+	}
+}
+

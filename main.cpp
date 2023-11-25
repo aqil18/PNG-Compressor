@@ -29,12 +29,12 @@ void TestPrune(double tol);
 
 int main(int argc, char* argv[]) {
 
-	TestBuildRender(1);
-	TestBuildRender(6);
-	TestFlipHorizontal();
-	TestRotateCCW();
-	// TestPrune(0.01);
-	// TestPrune(0.05);
+	// TestBuildRender(1);
+	// TestBuildRender(6);
+	// TestFlipHorizontal();
+	// TestRotateCCW();
+	TestPrune(0.01);
+	TestPrune(0.05);
 
 	return 0;
 }

@@ -17,3 +17,6 @@ void FlipHorizontal(Node* &subroot);
 void RotateCCW(Node* &subroot);
 void CopyNodes(Node* &subroot, Node* other);
 void Clear(Node* &subroot);
+void Prune(Node* &subroot, double tolerance);
+bool ValidPrune(Node* subroot, RGBAPixel nodeP, double tolerance);
+
