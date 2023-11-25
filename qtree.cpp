@@ -332,6 +332,7 @@ void QTree::RotateCCW(Node* &subroot) {
 		subroot -> NW -> lowRight = lr;
 
 	}
+	RotateCCW(subroot -> NW);
 
 
 	if (subroot -> NE != nullptr) {
@@ -347,6 +348,8 @@ void QTree::RotateCCW(Node* &subroot) {
 		subroot -> NE -> lowRight = lr;
 	}
 
+	RotateCCW(subroot -> NE);
+
 	if (subroot -> SW != nullptr) {
 		ul = subroot -> SW -> upLeft;
 		lr = subroot -> SW -> lowRight;
@@ -359,6 +362,7 @@ void QTree::RotateCCW(Node* &subroot) {
 		subroot -> SW -> upLeft = ul;
 		subroot -> SW -> lowRight = lr;
 	}
+	RotateCCW(subroot -> SW);
 
 	if (subroot -> SE != nullptr) {
 		ul = subroot -> SE -> upLeft;
@@ -373,11 +377,6 @@ void QTree::RotateCCW(Node* &subroot) {
 		subroot -> SE -> lowRight = lr;
 	}
 
-
-
-	RotateCCW(subroot -> NW);
-	RotateCCW(subroot -> NE);
-	RotateCCW(subroot -> SW);
 	RotateCCW(subroot -> SE);
 
 }
