@@ -311,9 +311,6 @@ void QTree::RotateCCW(Node* &subroot) {
 
 	}
 
-	pair<unsigned int, unsigned int> ul; 
-    pair<unsigned int, unsigned int> lr;
-
 	Node* nwTemp = subroot -> NW;
 	Node* seTemp = subroot -> SE;
 	subroot -> NW = subroot -> NE;
@@ -321,64 +318,21 @@ void QTree::RotateCCW(Node* &subroot) {
 	subroot -> NE = seTemp;
 	subroot -> SW = nwTemp;
 
-	if (subroot -> NW != nullptr) {
-		ul = subroot -> NW -> upLeft;
-		lr = subroot -> NW -> lowRight;
-		unsigned int tempu = ul.second;
-		unsigned int templ = lr.second;
-		ul.second = width - lr.first - 1;
-		lr.second = width - ul.first - 1;
-		ul.first = tempu;
-		lr.first = templ;
-		subroot -> NW -> upLeft = ul;
-		subroot -> NW -> lowRight = lr;
+	pair<unsigned int, unsigned int> ul = subroot -> upLeft;
+    pair<unsigned int, unsigned int> lr = subroot -> lowRight;
 
-	}
+	unsigned int tempu = ul.second;
+	unsigned int templ = lr.second;
+	ul.second = width - lr.first - 1;
+	lr.second = width - ul.first - 1;
+	ul.first = tempu;
+	lr.first = templ;
+	subroot -> upLeft = ul;
+	subroot -> lowRight = lr;
+
 	RotateCCW(subroot -> NW);
-
-
-	if (subroot -> NE != nullptr) {
-		ul = subroot -> NE -> upLeft;
-		lr = subroot -> NE -> lowRight;
-		unsigned int tempu = ul.second;
-		unsigned int templ = lr.second;
-		ul.second = width - lr.first - 1;
-		lr.second = width - ul.first - 1;
-		ul.first = tempu;
-		lr.first = templ;
-		subroot -> NE -> upLeft = ul;
-		subroot -> NE -> lowRight = lr;
-	}
-
 	RotateCCW(subroot -> NE);
-
-	if (subroot -> SW != nullptr) {
-		ul = subroot -> SW -> upLeft;
-		lr = subroot -> SW -> lowRight;
-		unsigned int tempu = ul.second;
-		unsigned int templ = lr.second;
-		ul.second = width - lr.first - 1;
-		lr.second = width - ul.first - 1;
-		ul.first = tempu;
-		lr.first = templ;
-		subroot -> SW -> upLeft = ul;
-		subroot -> SW -> lowRight = lr;
-	}
 	RotateCCW(subroot -> SW);
-
-	if (subroot -> SE != nullptr) {
-		ul = subroot -> SE -> upLeft;
-		lr = subroot -> SE -> lowRight;
-		unsigned int tempu = ul.second;
-		unsigned int templ = lr.second;
-		ul.second = width - lr.first - 1;
-		lr.second = width - ul.first - 1;
-		ul.first = tempu;
-		lr.first = templ;
-		subroot -> SE -> upLeft = ul;
-		subroot -> SE -> lowRight = lr;
-	}
-
 	RotateCCW(subroot -> SE);
 
 }
