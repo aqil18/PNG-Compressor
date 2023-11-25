@@ -136,10 +136,11 @@ void QTree::FlipHorizontal() {
  *  You may want a recursive helper function for this one.
  */
 void QTree::RotateCCW() {
+
+	RotateCCW(root);	
 	int temp = width;
 	width = height;
 	height = temp;
-	RotateCCW(root);	
 }
 
 /**
@@ -307,6 +308,7 @@ void QTree::Render(Node* subroot, unsigned int scale, PNG &img) const {
 void QTree::RotateCCW(Node* &subroot) {
 	if (subroot == nullptr) {
 		return;
+
 	}
 
 	pair<unsigned int, unsigned int> ul; 
@@ -324,8 +326,8 @@ void QTree::RotateCCW(Node* &subroot) {
 		lr = subroot -> NW -> lowRight;
 		unsigned int tempu = ul.second;
 		unsigned int templ = lr.second;
-		ul.second = height - lr.first - 1;
-		lr.second = height - ul.first - 1;
+		ul.second = width - lr.first - 1;
+		lr.second = width - ul.first - 1;
 		ul.first = tempu;
 		lr.first = templ;
 		subroot -> NW -> upLeft = ul;
@@ -340,8 +342,8 @@ void QTree::RotateCCW(Node* &subroot) {
 		lr = subroot -> NE -> lowRight;
 		unsigned int tempu = ul.second;
 		unsigned int templ = lr.second;
-		ul.second = height - lr.first - 1;
-		lr.second = height - ul.first - 1;
+		ul.second = width - lr.first - 1;
+		lr.second = width - ul.first - 1;
 		ul.first = tempu;
 		lr.first = templ;
 		subroot -> NE -> upLeft = ul;
@@ -355,8 +357,8 @@ void QTree::RotateCCW(Node* &subroot) {
 		lr = subroot -> SW -> lowRight;
 		unsigned int tempu = ul.second;
 		unsigned int templ = lr.second;
-		ul.second = height - lr.first - 1;
-		lr.second = height - ul.first - 1;
+		ul.second = width - lr.first - 1;
+		lr.second = width - ul.first - 1;
 		ul.first = tempu;
 		lr.first = templ;
 		subroot -> SW -> upLeft = ul;
@@ -369,8 +371,8 @@ void QTree::RotateCCW(Node* &subroot) {
 		lr = subroot -> SE -> lowRight;
 		unsigned int tempu = ul.second;
 		unsigned int templ = lr.second;
-		ul.second = height - lr.first - 1;
-		lr.second = height - ul.first - 1;
+		ul.second = width - lr.first - 1;
+		lr.second = width - ul.first - 1;
 		ul.first = tempu;
 		lr.first = templ;
 		subroot -> SE -> upLeft = ul;
