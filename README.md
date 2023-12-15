@@ -1,1 +1,2 @@
-# CPSC221-PA3
+# PNG-Compressor
+
